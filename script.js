@@ -1,9 +1,10 @@
+let products, categories;
 let searchButton = document.getElementById("searchButton");
-
 
 let clear = document.getElementById("home").addEventListener("click", () => {
   let productsContainer = document.querySelector(".row");
   productsContainer.innerHTML = "";
+
   getProducts()
     .then((prods) => {
       products = prods.data;
@@ -12,29 +13,31 @@ let clear = document.getElementById("home").addEventListener("click", () => {
     .catch((e) => console.error("Error: ", e));
 });
 
-let products, categories;
-
 const handleSearchBox = () => {
-
   let searchBox = document.getElementById("searchBox").value;
 
-  if(searchBox === ""){
-    alert('Ingrese datos de busqueda');
+  if (searchBox === "") {
+    alert("Ingrese datos de busqueda");
     return;
   } else {
-
     let productsContainer = document.querySelector(".row");
     productsContainer.innerHTML = "";
 
     getProducts(searchBox)
       .then((prods) => {
         products = prods.data;
+        if (products.length === 0) {
+          console.log("Aqui?");
+          let noProds = document.createElement("h1");
+          noProds.style = "margin: 1rem 0";
+          noProds.innerText = "No hay proudctos con ese nombre";
+          productsContainer.appendChild(noProds);
+          return;
+        }
         setProducts();
       })
       .catch((e) => console.error("Error: ", e));
-
   }
-  
 };
 
 const setCategories = () => {
@@ -43,7 +46,10 @@ const setCategories = () => {
     let li = document.createElement("li");
     li.classList.add("list-group-item");
     li.appendChild(document.createTextNode(category.name));
-    li.addEventListener("click", (e) => changeCategory(e));
+    li.addEventListener("click", (e) => {
+      changeCategory(e);
+      showOffCanvas();
+    });
     container.appendChild(li);
   });
 };
@@ -71,6 +77,7 @@ const setSelectedCategory = (selectedCategory) => {
 };
 
 const createCard = (name, img, discount, price, category) => {
+  category = categories.filter((cat) => cat.id === category);
   let container = document.createElement("div");
   container.classList.add("col-sm-12");
   container.classList.add("col-lg-4");
@@ -101,7 +108,7 @@ const createCard = (name, img, discount, price, category) => {
           <p>
             <a href="#!" class="text-dark">${name}</a>
           </p>
-          <p class="small text-muted">${category}</p>
+          <p class="small text-muted" style="text-transform:capitalize">${category[0].name}</p>
         </div>
       </div>
     </div>
@@ -178,8 +185,17 @@ const searchProduct = async (string) => {
   }
 };
 
+const showOffCanvas = () => {
+  let canvas = document.querySelector(".offcanvas");
+  document.body.style = "";
+  canvas.classList.remove("show");
+  let backdrop = document.querySelector(".offcanvas-backdrop");
+  backdrop.remove();
+};
+
 getCategories()
   .then((cats) => {
+    cats.data.forEach((cat) => console.log(cat));
     categories = cats.data;
     setCategories();
     console.log("categories:", categories);
