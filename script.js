@@ -26,14 +26,17 @@ const handleSearchBox = () => {
     getProducts(searchBox)
       .then((prods) => {
         products = prods.data;
+
         if (products.length === 0) {
-          console.log("Aqui?");
+
           let noProds = document.createElement("h1");
           noProds.style = "margin: 1rem 0";
           noProds.innerText = "No hay proudctos con ese nombre";
           productsContainer.appendChild(noProds);
           return;
+          
         }
+
         setProducts();
       })
       .catch((e) => console.error("Error: ", e));
@@ -63,10 +66,7 @@ const setSelectedCategory = (selectedCategory) => {
   let productsContainer = document.querySelector(".row");
   productsContainer.innerHTML = "";
 
-  console.log("clickeado:", selectedCategory);
-
   let selectedCat = categories.filter((cat) => cat.name === selectedCategory);
-  console.log("Selected cat:", selectedCat[0].id);
 
   getProducts("", selectedCat[0].id)
     .then((prods) => {
@@ -108,7 +108,9 @@ const createCard = (name, img, discount, price, category) => {
           <p>
             <a href="#!" class="text-dark">${name}</a>
           </p>
-          <p class="small text-muted" style="text-transform:capitalize">${category[0].name}</p>
+          <p class="small text-muted" style="text-transform:capitalize">${
+            category[0].name
+          }</p>
         </div>
       </div>
     </div>
@@ -133,27 +135,26 @@ const createCard = (name, img, discount, price, category) => {
   return container;
 };
 
-const setProducts = (category = "") => {
+const setProducts = () => {
   let productsContainer = document.querySelector(".row");
 
-  if (category.length === 0) {
-    products.forEach((prod) => {
-      let card = createCard(
-        prod.name,
-        prod.url_image,
-        prod.discount,
-        prod.price,
-        prod.category
-      );
-      productsContainer.appendChild(card);
-    });
-  }
+  products.forEach((prod) => {
+    let card = createCard(
+      prod.name,
+      prod.url_image,
+      prod.discount,
+      prod.price,
+      prod.category
+    );
+    productsContainer.appendChild(card);
+  });
+
 };
 
 const getProducts = async (productName = "", categoryId = "") => {
   try {
     let res = await fetch(
-      `http://ec2-35-92-43-27.us-west-2.compute.amazonaws.com/api/products/?productName=${productName}&categoryId=${categoryId}`
+      `https://backend-desafio-bsale.herokuapp.com/api/products/?productName=${productName}&categoryId=${categoryId}`
     );
     let products = await res.json();
     console.log("procesados:", products);
@@ -166,18 +167,8 @@ const getProducts = async (productName = "", categoryId = "") => {
 const getCategories = async () => {
   try {
     let res = await fetch(
-      "http://ec2-35-92-43-27.us-west-2.compute.amazonaws.com/api/categories"
+      "https://backend-desafio-bsale.herokuapp.com/api/categories/"
     );
-    let categories = await res.json();
-    return categories;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const searchProduct = async (string) => {
-  try {
-    let res = fetch(`/api/products/n=${string.trim.toLowerCase()}`);
     let categories = await res.json();
     return categories;
   } catch (error) {
@@ -195,7 +186,6 @@ const showOffCanvas = () => {
 
 getCategories()
   .then((cats) => {
-    cats.data.forEach((cat) => console.log(cat));
     categories = cats.data;
     setCategories();
     console.log("categories:", categories);

@@ -7,7 +7,7 @@ I recommend you use the following extension in your code editor to quickly visua
 
 ## Initialize and see changes
 
-    $ Right click on the index.html and click on "Start on live server"
+    $ Right click on the index.html and click on "Open with LiveServer"
 
 ## Open the html file
 
